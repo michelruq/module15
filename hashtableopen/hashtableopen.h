@@ -11,6 +11,7 @@ class HashTableOpen
        
 	
 	   std::uint32_t GetHash(char fruitName[10]);
+	   void Resize();
 	
 	public:
 	   ChainNode** chainTops;

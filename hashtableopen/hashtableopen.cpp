@@ -36,6 +36,10 @@ std::uint32_t HashTableOpen::GetHash(char fruitName[10])
 
 void HashTableOpen::addItem(ChainNode::FruitName name, std::uint32_t count)
 {
+   if(count/Size > static_cast<std::uint32_t>(3))
+   {
+	   Resize();
+   }
    std::uint32_t index = GetHash(name);
    ChainNode* newNode = new ChainNode(name, count);
    if(chainTops[index] != nullptr)
@@ -85,4 +89,39 @@ std::uint32_t HashTableOpen::find(ChainNode::FruitName name)
 	   currentPtr = currentPtr->mNext;
    }
    return static_cast<std::uint32_t>(0);
+}
+
+void HashTableOpen::Resize()
+{
+	ChainNode** intermediate = chainTops;
+	std::uint32_t oldSize = Size;
+	
+	Size *= static_cast<std::uint32_t>(2);
+	count = static_cast<std::uint32_t>(0);
+	
+	chainTops = new ChainNode*[Size];
+	for(std::uint32_t i = static_cast<std::uint32_t>(0); i < Size; ++i)
+	{
+		chainTops[i] = nullptr;
+	}
+	
+	for(std::uint32_t i = static_cast<std::uint32_t>(0); i < oldSize; ++i)
+	{
+		ChainNode* current = intermediate[i];
+		while(current != nullptr)
+		{
+			addItem(current->mName, current->mCount);
+			current = current -> mNext;
+		}
+	}
+	
+	for(std::uint32_t i = static_cast<std::uint32_t>(0); i < oldSize; ++i)
+	{
+		if(intermediate[i] != nullptr)
+		{
+			delete intermediate[i];
+		}
+	}
+	
+	delete[] intermediate;
 }
